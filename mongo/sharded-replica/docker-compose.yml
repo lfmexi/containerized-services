@@ -1,0 +1,105 @@
+version: '2'
+networks:
+  backend:
+    external: true
+services:
+  # Config Server Replica
+  mgdb01_conf:
+    command: mongod --configsvr --replSet mgdb_conf
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb01_conf/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 47001:27019
+  mgdb02_conf:
+    command: mongod --configsvr --replSet mgdb_conf
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb02_conf/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 47002:27019
+  mgdb03_conf:
+    command: mongod --configsvr --replSet mgdb_conf
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb03_conf/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 47003:27019
+  # Mongos instances
+  mongo01:
+    command: mongos --configdb mgdb_conf/mgdb01_conf,mgdb02_conf,mgdb03_conf
+    image: mongo:3.4
+    networks:
+      - backend
+    ports:
+      - 27017:27017
+  mongo02:
+    command: mongos --configdb mgdb_conf/mgdb01_conf,mgdb02_conf,mgdb03_conf
+    image: mongo:3.4
+    networks:
+      - backend
+    ports:
+      - 27018:27017
+  # Replica Set 1
+  mgdb01_repl1:
+    command: mongod --shardsvr --replSet mgdb_repl1
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb01_repl1/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 17001:27018
+  mgdb02_repl1:
+    command: mongod --shardsvr --replSet mgdb_repl1
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb02_repl1/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 17002:27018
+  mgdb03_repl1:
+    command: mongod --shardsvr --replSet mgdb_repl1
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb03_repl1/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 17003:27018
+  # Replica Set 2
+  mgdb01_repl2:
+    command: mongod --shardsvr --replSet mgdb_repl2
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb01_repl2/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 27001:27018
+  mgdb02_repl2:
+    command: mongod --shardsvr --replSet mgdb_repl2
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb02_repl2/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 27002:27018
+  mgdb03_repl2:
+    command: mongod --shardsvr --replSet mgdb_repl2
+    image: mongo:3.4
+    volumes: 
+      - /opt/luis/data/mgdb03_repl2/db:/data/db
+    networks:
+      - backend
+    ports:
+      - 27003:27018
+  
